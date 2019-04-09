@@ -152,6 +152,29 @@ const converters = {
             return {state: msg.data.data.lockState === 2 ? 'UNLOCK' : 'LOCK'};
         },
     },
+    YMF40_lockstatus: {
+        cid: 'closuresDoorLock',
+        type: 'cmdOperationEventNotification',
+        convert: (model, msg, publish, options) => {
+            const stateCode = msg.data.data['opereventcode'];
+            const user = msg.data.data['userid'];
+            const sourceCode = msg.data.data['opereventsrc'];
+            const source;
+            if (sourceCode == '0') {
+                source = 'Keypad';
+            }
+            else if (sourceCode == '2') {
+                source = 'Inside';
+            }
+            else if (sourceCode == '4') {
+                source = 'Fingerprint';
+            }
+            else {
+                source = 'Other';
+            }
+            return {state: stateCode === 2 ? 'Unlock' : 'Lock', user: user, source: source};
+        },
+    },
     genOnOff_cmdOn: {
         cid: 'genOnOff',
         type: 'cmdOn',
